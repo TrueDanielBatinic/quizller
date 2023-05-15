@@ -1,4 +1,8 @@
-
+<?php
+session_start();
+if(!isset($_SESSION["user_id"]))
+  header("Location:../index.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +24,7 @@
   <!-- CSS Files -->
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../assets/css/now-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
-  <link type="text/css" rel="stylesheet" href="http://jqueryte.com/css/jquery-te.css" charset="utf-8">
+  <!-- <link type="text/css" rel="stylesheet" href="http://jqueryte.com/css/jquery-te.css" charset="utf-8"> -->
   <link href="../assets/css/main.css" rel="stylesheet" />
 </head>
 
@@ -67,64 +71,51 @@
                 </div>  
               </div>
               <div class="card-body">
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-                  <input type="hidden" name="general_settings"/>
-                  <!-- <div id="no-data">
-                    <center>
-                      <img src="../assets/img/no-data.svg" height="400" width="400"/>
-                      <center><h5>No Data</h5></center>
-                    </center>
-                  </div> -->
-
-                  <div class="card" style="background:#ededed;">
-                  <a href="test_stats.php" style="color:#2c2c2c;text-decoration:none;">
-                    <div class="card-body">
-                      <h6>Computer Organization and Architecture (MCQ)</h6>
-                      <div class="row">
-                        <div class="col-md-8">
-                          <p>Subject - COA</p>
-                        </div>
-                        <div class="col-md-4"> 
-                          <p style="text-align:right;">Date - 13/06/2020</p>
-                        </div>
+                  <?php
+                    include '../../database/config.php';
+                    $user_id = $_SESSION["user_id"];
+                    $sql = "select * from tests where teacher_id = $user_id and status_id = 3";
+                    $result = mysqli_query($conn,$sql);
+                    if(mysqli_num_rows($result) > 0) {
+                      while($row = mysqli_fetch_assoc($result)) {
+                        ?>
+                          <div class="card" style="background:#ededed;">
+                              <div class="card-body" onclick="submit(<?= $row['id'];?>,'<?php echo $row['name'];?>')">
+                                <h6><?= $row["name"];?></h6>
+                                <div class="row">
+                                  <div class="col-md-8">
+                                    <p>Subject - <?= $row["subject"];?></p>
+                                  </div>
+                                  <div class="col-md-4"> 
+                                    <p style="text-align:right;">Date - <?= $row["date"];?></p>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                        <?php
+                      }
+                    }
+                    else {
+                      ?>
+                      <div id="no-data">
+                        <center>
+                          <img src="../assets/img/no-data.svg" height="400" width="400"/>
+                          <center><h5>No Data</h5></center>
+                        </center>
                       </div>
-                    </div>
-                    </a>
-                  </div>
-
-                  <div class="card" style="background:#ededed;">
-                    <div class="card-body">
-                      <h6>Computer Organization and Architecture (MCQ)</h6>
-                      <div class="row">
-                        <div class="col-md-8">
-                          <p>Subject - COA</p>
-                        </div>
-                        <div class="col-md-4"> 
-                          <p style="text-align:right;">Date - 13/06/2020</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="card" style="background:#ededed;">
-                    <div class="card-body">
-                      <h6>Computer Organization and Architecture (MCQ)</h6>
-                      <div class="row">
-                        <div class="col-md-8">
-                          <p>Subject - COA</p>
-                        </div>
-                        <div class="col-md-4"> 
-                          <p style="text-align:right;">Date - 13/06/2020</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+                      <?php
+                    }
+                  ?>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <form method="POST" action="test_stats.php" id="test_details">
+        <input type="hidden" id="test_id" name="test_id">
+        <input type="hidden" id="test_name" name="test_name">
+      </form>
       <!-- footer -->
       <?php
         include "footer.php";
@@ -139,11 +130,17 @@
   <script src="../assets/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/now-ui-dashboard.min.js?v=1.1.0" type="text/javascript"></script>
-  <script src="http://jqueryte.com/js/jquery-te-1.4.0.min.js"></script>
+  <!-- <script src="http://jqueryte.com/js/jquery-te-1.4.0.min.js"></script> -->
 </body>
 <script>
   function redirect_to_new_test() {
     window.location = "new_test.php";
+  }
+
+  function submit(val1,val2) {
+    document.getElementById("test_id").value = val1;
+    document.getElementById("test_name").value = val2;
+    document.getElementById("test_details").submit();
   }
 </script>
 </html>

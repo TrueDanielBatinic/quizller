@@ -24,7 +24,7 @@ if(!isset($_SESSION["user_id"]))
   <!-- CSS Files -->
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../assets/css/now-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
-  <link type="text/css" rel="stylesheet" href="http://jqueryte.com/css/jquery-te.css" charset="utf-8">
+  <!-- <link type="text/css" rel="stylesheet" href="http://jqueryte.com/css/jquery-te.css" charset="utf-8"> -->
   <link href="../assets/css/main.css" rel="stylesheet" />
 </head>
 
@@ -74,11 +74,7 @@ if(!isset($_SESSION["user_id"]))
                 </div>  
               </div>
               <div class="card-body">
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-                  <input type="hidden" name="general_settings"/>
-
                   <?php
-
                     include '../../database/config.php';
                     $user_id = $_SESSION["user_id"];
                     $sql = "select * from tests where teacher_id = $user_id and status_id IN (1,2)";
@@ -87,8 +83,7 @@ if(!isset($_SESSION["user_id"]))
                       while($row = mysqli_fetch_assoc($result)) {
                         ?>
                           <div class="card" style="background:#ededed;">
-                            <a href="test_details.php" style="color:#2c2c2c;text-decoration:none;">
-                              <div class="card-body">
+                              <div class="card-body" onclick="submit(<?= $row['id'];?>)">
                                 <h6><?= $row["name"];?></h6>
                                 <div class="row">
                                   <div class="col-md-8">
@@ -99,9 +94,7 @@ if(!isset($_SESSION["user_id"]))
                                   </div>
                                 </div>
                               </div>
-                            </a>
                           </div>
-
                         <?php
                       }
                     }
@@ -116,13 +109,15 @@ if(!isset($_SESSION["user_id"]))
                       <?php
                     }
                   ?>
-
-                </form>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <form method="POST" action="test_details.php" id="test_details">
+        <input type="hidden" id="test_id" name="test_id">
+      </form>
       <!-- footer -->
       <?php
         include "footer.php";
@@ -137,11 +132,16 @@ if(!isset($_SESSION["user_id"]))
   <script src="../assets/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/now-ui-dashboard.min.js?v=1.1.0" type="text/javascript"></script>
-  <script src="http://jqueryte.com/js/jquery-te-1.4.0.min.js"></script>
+  <!-- <script src="http://jqueryte.com/js/jquery-te-1.4.0.min.js"></script> -->
 </body>
 <script>
   function redirect_to_new_test() {
     window.location = "new_test.php";
+  }
+
+  function submit(val1) {
+    document.getElementById("test_id").value = val1;
+    document.getElementById("test_details").submit();
   }
 </script>
 </html>
